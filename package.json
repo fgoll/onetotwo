@@ -1,0 +1,22 @@
+{
+  "name": "onetotwo",
+  "version": "1.0.0",
+  "description": "separate html and css in a html file.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/appswifter/onetotwo.git"
+  },
+  "keywords": [
+    "onetotwo"
+  ],
+  "author": "hong",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/appswifter/onetotwo/issues"
+  },
+  "homepage": "https://github.com/appswifter/onetotwo#readme"
+}
