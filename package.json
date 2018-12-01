@@ -6,10 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/appswifter/onetotwo.git"
-  },
+  "repository": "git+https://github.com/appswifter/onetotwo.git",
   "keywords": [
     "onetotwo"
   ],
@@ -18,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/appswifter/onetotwo/issues"
   },
-  "homepage": "https://github.com/appswifter/onetotwo#readme"
+  "homepage": "https://github.com/appswifter/onetotwo#readme",
+  "dependencies": {
+    "chalk": "^2.4.1",
+    "commander": "^2.19.0"
+  }
 }

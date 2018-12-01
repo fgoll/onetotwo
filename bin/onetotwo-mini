@@ -1,0 +1,31 @@
+#!/usr/bin/env node
+
+const program = require('commander')
+const chalk = require('chalk')
+const scan = require('../lib/scan')
+const print = require('../lib/print')
+
+program
+    .usage('[project-path]')
+
+
+program.on('--help', () => {
+    console.log('  Examples:')
+    console.log()
+    console.log(chalk.gray('    # begin watch a mini-program to work'))
+    console.log('    $ onetotwo mini project-path')
+})
+
+function help() {
+    program.parse(process.argv)
+    if (program.args.length < 1) return program.help() 
+}
+
+help()
+
+let projPath = program.args[0]
+scan(projPath).then((root) => {
+    print(root)
+}, (reason) => {
+    console.log(chalk.red(` ${reason}`))
+})

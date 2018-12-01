@@ -1,0 +1,8 @@
+#!/usr/bin/env node
+
+require("commander")
+    .version(require('../package').version)
+    .usage('<command> [options]')
+    .command('mini', 'separate a mini-program project')
+    .command('h5', 'separate a html5 project')
+    .parse(process.argv)
