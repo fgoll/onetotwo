@@ -2,8 +2,17 @@
 
 const program = require('commander')
 const chalk = require('chalk')
+const fs = require('fs')
+const path = require('path')
+const basename = dir => path.basename(dir),
+      join = (dir, file) => path.join(dir, file)
 const scan = require('../lib/scan')
 const print = require('../lib/print')
+const createNode = require('../lib/utils').createNode
+const watch = require('../lib/watch')
+
+const wxmlRE = /(.+)\.wxml$/
+const jhmlRE = /.+\.jhml\.wxml$/
 
 program
     .usage('[project-path]')
@@ -23,9 +32,66 @@ function help() {
 
 help()
 
+function mark(root) {
+    function walk(childrens) {
+        for (let child of childrens) {
+            if (child.children) walk(child.children)
+            const file = child.name
+            const wxmlMatch = file.match(wxmlRE)
+            if (!wxmlMatch) continue
+            child.parent && (child.parent.work = true)
+            if (!jhmlRE.test(file)) continue
+            child.parent.finish = true
+            child.watch = true
+        }
+    }
+    walk(root.children)
+}
+
+function create(root) {
+    function walk(childrens) {
+        for (let child of childrens) {
+            if (child.children) walk(child.children)
+
+            if (child.work && !child.finish) {
+                const dir = join(child.path, child.name + '.jhml.wxml')
+                fs.openSync(dir, 'w')
+                // fs.close()
+                const node = createNode(dir, 'file', child.deep + 1, child)
+                node.watch = true
+                child.children.push(node)
+            }
+        }
+    }
+
+    walk(root.children)
+}
+
+function work(root) {
+    function walk(childrens) {
+        for (let child of childrens) {
+           if (child.watch) {
+               watch(child.path).then(html => {
+                   console.log(html)
+               })
+           }
+           if (child.children) {
+               walk(child.children)
+           }
+        }
+    }
+
+    walk(root.children)
+}
+
 let projPath = program.args[0]
 scan(projPath).then((root) => {
+    mark(root)
+    create(root)
     print(root)
+    work(root)
+
 }, (reason) => {
     console.log(chalk.red(` ${reason}`))
 })
+
