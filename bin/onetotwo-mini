@@ -5,11 +5,12 @@ const chalk = require('chalk')
 const fs = require('fs')
 const path = require('path')
 const basename = dir => path.basename(dir),
-      join = (dir, file) => path.join(dir, file)
+    join = (dir, file) => path.join(dir, file)
 const scan = require('../lib/scan')
 const print = require('../lib/print')
 const createNode = require('../lib/utils').createNode
 const watch = require('../lib/watch')
+const parse = require('../lib/parser')
 
 const wxmlRE = /(.+)\.wxml$/
 const jhmlRE = /.+\.jhml\.wxml$/
@@ -27,7 +28,7 @@ program.on('--help', () => {
 
 function help() {
     program.parse(process.argv)
-    if (program.args.length < 1) return program.help() 
+    if (program.args.length < 1) return program.help()
 }
 
 help()
@@ -70,14 +71,17 @@ function create(root) {
 function work(root) {
     function walk(childrens) {
         for (let child of childrens) {
-           if (child.watch) {
-               watch(child.path).then(html => {
-                   console.log(html)
-               })
-           }
-           if (child.children) {
-               walk(child.children)
-           }
+            if (child.watch) {
+                watch(child.path, (html, err) => {
+                    if (err) {
+                        return 
+                    }
+                    parse(html)
+                })
+            }
+            if (child.children) {
+                walk(child.children)
+            }
         }
     }
 
@@ -94,4 +98,3 @@ scan(projPath).then((root) => {
 }, (reason) => {
     console.log(chalk.red(` ${reason}`))
 })
-
