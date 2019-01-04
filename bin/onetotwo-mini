@@ -76,7 +76,8 @@ function work(root) {
                     if (err) {
                         return 
                     }
-                    parse(html)
+                    const ast = parse(html.trim())
+                    console.log(ast)
                 })
             }
             if (child.children) {
