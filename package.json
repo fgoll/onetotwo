@@ -1,8 +1,11 @@
 {
   "name": "onetotwo",
-  "version": "1.0.0",
-  "description": "separate html and css in a html file.",
+  "version": "2.0.1",
+  "description": "A simple CLI to separate html and css.",
   "main": "index.js",
+  "bin": {
+    "onetotwo": "./bin/onetotwo"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
