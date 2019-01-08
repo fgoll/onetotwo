@@ -11,6 +11,7 @@ const print = require('../lib/print')
 const createNode = require('../lib/utils').createNode
 const watch = require('../lib/watch')
 const parse = require('../lib/parser')
+const generate = require('../lib/codegen').generate
 
 const wxmlRE = /(.+)\.wxml$/
 const jhmlRE = /.+\.jhml\.wxml$/
@@ -72,12 +73,28 @@ function work(root) {
     function walk(childrens) {
         for (let child of childrens) {
             if (child.watch) {
-                watch(child.path, (html, err) => {
+                watch(child.path, (template, err) => {
                     if (err) {
                         return 
                     }
-                    const ast = parse(html.trim())
-                    console.log(ast)
+                    const ast = parse(template.trim())
+                    let {html, css} = generate(ast)
+                    let dest_wxml_path = child.path.replace('.jhml', '')
+                    let dest_wxss_path = dest_wxml_path.replace(/wxml$/g, 'wxss')
+                    
+                    fs.writeFile(dest_wxml_path, html, err => {
+                        if (!err) {
+                            let name = path.basename(dest_wxml_path)
+                            console.log(chalk.green(`write html to ${name}`))
+                        }
+                    })
+
+                    fs.writeFile(dest_wxss_path, css, err => {
+                        if (!err) {
+                            let name = path.basename(dest_wxss_path) 
+                            console.log(chalk.green(`write css to ${name}`))
+                        }
+                    })
                 })
             }
             if (child.children) {
