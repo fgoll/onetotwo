@@ -88,8 +88,8 @@ function work(root, config_info) {
                     if (err) {
                         return 
                     }
-                    const ast = parse(template.trim())
-                    let {html, css} = generate(ast, config_info)
+                    const ast = parse(template.trim(), config_info)
+                    let {html, css} = generate(ast)
                     // console.log(css)
                     let dest_wxml_path = child.path.replace('.jhml', '')
                     let dest_wxss_path = dest_wxml_path.replace(/wxml$/g, 'wxss')
@@ -127,7 +127,7 @@ let projPath = program.args[0]
 config.createAndReadConfig(projPath).then(config_path => {
 
     let config_info = require(config_path)
-    
+
     scan(projPath).then((root) => {
         mark(root)
         create(root)
