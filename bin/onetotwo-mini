@@ -12,9 +12,12 @@ const createNode = require('../lib/utils').createNode
 const watch = require('../lib/watch')
 const parse = require('../lib/parser')
 const generate = require('../lib/codegen').generate
+const chokidar = require('chokidar');
+const config = require('../lib/config')
 
 const wxmlRE = /(.+)\.wxml$/
 const jhmlRE = /.+\.jhml\.wxml$/
+const configRE = /^jhml.config.js$/
 
 program
     .usage('[project-path]')
@@ -43,11 +46,17 @@ function mark(root) {
             if (!wxmlMatch) continue
             child.parent && (child.parent.work = true)
             if (!jhmlRE.test(file)) continue
-            child.parent.finish = true
+            child.parent.finish = true  // mark whether create jhml file
             child.watch = true
         }
     }
     walk(root.children)
+
+    for (let child of root.children) {
+        if (child.name.match(configRE)) {
+            child.config = true
+        }
+    }
 }
 
 function create(root) {
@@ -57,8 +66,10 @@ function create(root) {
 
             if (child.work && !child.finish) {
                 const dir = join(child.path, child.name + '.jhml.wxml')
-                fs.openSync(dir, 'w')
-                // fs.close()
+                fs.exists(dir, exists => {
+                    if (!exists) fs.openSync(dir, 'w')
+                })
+                
                 const node = createNode(dir, 'file', child.deep + 1, child)
                 node.watch = true
                 child.children.push(node)
@@ -69,7 +80,7 @@ function create(root) {
     walk(root.children)
 }
 
-function work(root) {
+function work(root, config_info) {
     function walk(childrens) {
         for (let child of childrens) {
             if (child.watch) {
@@ -78,7 +89,8 @@ function work(root) {
                         return 
                     }
                     const ast = parse(template.trim())
-                    let {html, css} = generate(ast)
+                    let {html, css} = generate(ast, config_info)
+                    // console.log(css)
                     let dest_wxml_path = child.path.replace('.jhml', '')
                     let dest_wxss_path = dest_wxml_path.replace(/wxml$/g, 'wxss')
                     
@@ -107,12 +119,22 @@ function work(root) {
 }
 
 let projPath = program.args[0]
-scan(projPath).then((root) => {
-    mark(root)
-    create(root)
-    print(root)
-    work(root)
 
-}, (reason) => {
-    console.log(chalk.red(` ${reason}`))
+// chokidar.watch(projPath,{
+//     ignored: /(^|[\/\\])\../,
+//     persistent: true
+//   }).on('addDir', path => console.log(`Directory ${path} has been added`))
+config.createAndReadConfig(projPath).then(config_path => {
+
+    let config_info = require(config_path)
+    
+    scan(projPath).then((root) => {
+        mark(root)
+        create(root)
+        print(root)
+        work(root, config_info)
+
+    }, (reason) => {
+        console.log(chalk.red(` ${reason}`))
+    })
 })

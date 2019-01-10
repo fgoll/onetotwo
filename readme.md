@@ -1,7 +1,7 @@
 
 # Introduction
 
-A simple CLI to separate html and css
+A simple CLI to separate html and css (working for mini program)
 
 # Installation
 ```npm
@@ -18,6 +18,7 @@ Then you can write the inline style html in `.jhml.wxml` file, and CLI will auto
 # Example 
 
 In `test.jhml.wxml` file write:
+
 ```html
 <!-- test.jhml.wxml -->
 <view class='container' style='background: red'>
@@ -31,6 +32,7 @@ In `test.jhml.wxml` file write:
 ```
 
 CLI will watch the change of `test.jhml.wxml` and separate html and css into:
+
 ```html 
 <!-- test.wxml -->
 <view class='container'>
@@ -43,10 +45,64 @@ CLI will watch the change of `test.jhml.wxml` and separate html and css into:
 </view>
 ```
 and 
+
 ```css
 <!-- test.wxss -->
 .container{background: red}
 .container .header{background: green;}
 .container .footer{background: yellow;}
+```
+
+# Config
+
+CLI will create `jhml.config.js` file in `[project-directory]`, you can add regular expressions to handle your style
+
+```js
+/** jhml.config.js */
+module.exports = {
+  styleREG: [
+    {
+      reg: 'r\\(?(\\d+(?:\\.\\d+)?)\\)?;?', // translate n px => 2n rpx
+      exp:  function($0, $1) {
+        return $1 * 2 + 'rpx'
+      }
+    },{
+      reg: 'line: \\s(\\d+);',  // over n line auto hidden
+      exp: 'overflow: hidden;text-overflow: ellipsis;display: box;display: -webkit-box;line-clamp: $1; -webkit-line-clamp: $1; -webkit-box-orient: vertical;'
+    }
+  ]
+}
+```
+you can add other handler such as:
+
+```js
+/** jhml.config.js */
+module.exports = {
+  styleREG: [
+    {
+      reg: 'hc', // horizontal center
+      exp:  'position: absolute; left: 50%; transform: translateX(-50%);'
+    },
+    {
+      reg: 'vc', // vertical center
+      exp: 'position: absolute; top: 50%; transform: translateY(-50%);
+    }
+// ...
+  ]
+}
+```
+then you can write:
+
+```html
+<!-- test.jhml.wxml -->
+<view class='container'>
+    <view class='box' style='hc;'></view>
+</view>
+```
+CLI will generate style:
+
+```css
+<!-- test.wxss -->
+.container .box { position: absolute; left: 50%; transform: translateX(-50%); }
 ```
 

@@ -1,6 +1,6 @@
 {
   "name": "onetotwo",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A simple CLI to separate html and css.",
   "main": "index.js",
   "bin": {
@@ -21,6 +21,7 @@
   "homepage": "https://github.com/appswifter/onetotwo#readme",
   "dependencies": {
     "chalk": "^2.4.1",
+    "chokidar": "^2.0.4",
     "commander": "^2.19.0"
   }
 }
