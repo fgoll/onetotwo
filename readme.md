@@ -85,7 +85,7 @@ module.exports = {
     },
     {
       reg: 'vc', // vertical center
-      exp: 'position: absolute; top: 50%; transform: translateY(-50%);
+      exp: 'position: absolute; top: 50%; transform: translateY(-50%);'
     }
 // ...
   ]
