@@ -66,10 +66,8 @@ function create(root) {
 
             if (child.work && !child.finish) {
                 const dir = join(child.path, child.name + '.jhml.wxml')
-                fs.exists(dir, exists => {
-                    if (!exists) fs.openSync(dir, 'w')
-                })
-                
+                fs.openSync(dir, 'w')
+            
                 const node = createNode(dir, 'file', child.deep + 1, child)
                 node.watch = true
                 child.children.push(node)
