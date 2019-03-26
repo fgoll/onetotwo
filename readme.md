@@ -25,6 +25,10 @@ In `test.jhml.wxml` file write:
   <view class='header' style='background: green;'> 
     header
   </view>
+  // pseudo-class :after
+  <view class='content' style='background: pink; width: 100%;' :after='content: ""; width: 100%; height: r1; background: black;'>
+    content
+  </view>
   <view class='footer' style='background: yellow;'>
     footer
   </view>
@@ -35,11 +39,14 @@ CLI will watch the change of `test.jhml.wxml` and separate html and css into:
 
 ```html 
 <!-- test.wxml -->
-<view class='container'>
-  <view class='header'> 
+<view class="container">
+  <view class="header"> 
     header
   </view>
-  <view class='footer'>
+  <view class="content">
+    content
+  </view>
+  <view class="footer">
     footer
   </view>
 </view>
@@ -48,9 +55,10 @@ and
 
 ```css
 <!-- test.wxss -->
-.container{background: red}
-.container .header{background: green;}
-.container .footer{background: yellow;}
+.container  { background: red }
+.container .header  { background: green; }
+.container .content  { background: pink; width: 100%; }
+.container .content:after { content: ""; width: 100%; height: 2rpx; background: black; }.container .footer  { background: yellow; }
 ```
 
 # Config
