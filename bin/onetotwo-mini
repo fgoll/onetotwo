@@ -116,7 +116,7 @@ function work(root, config_info) {
     walk(root.children)
 }
 
-let projPath = program.args[0]
+let projPath = path.resolve(program.args[0])
 
 // chokidar.watch(projPath,{
 //     ignored: /(^|[\/\\])\../,
